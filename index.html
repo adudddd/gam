@@ -317,7 +317,7 @@
 
     <script>
         // Main game initialization
-document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Game elements
             const gameContainer = document.getElementById('game-container');
             const player = document.getElementById('player');
@@ -380,7 +380,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Position player in center
                 player.style.left = (gameWidth - playerWidth) / 2 + 'px';
                 
-                // Start spawning emojis
+                // Set game active state before spawning emojis
+                gameActive = true;
                 clearTimeout(spawnTimeout);
                 spawnEmoji();
                 
@@ -390,8 +391,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Start animation frame for game loop
                 requestAnimationFrame(updateGame);
-                
-                gameActive = true;
             }
             
             // Update game time
@@ -444,13 +443,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     element: emojiElement,
                     id: emojiElement.dataset.id,
                     y: -50,
-                    speed: dropSpeed * (Math.random() * 0.4 + 0.8) * speedModifier, // Random speed variation
+                    speed: dropSpeed * (Math.random() * 0.4 + 0.8) * speedModifier,
                     type: emojiElement.dataset.type
                 });
                 
                 // Schedule next spawn
                 let nextInterval = dropInterval - (level - 1) * 50;
-                nextInterval = Math.max(nextInterval, 300); // Min 300ms between spawns
+                nextInterval = Math.max(nextInterval, 300);
                 spawnTimeout = setTimeout(spawnEmoji, nextInterval);
             }
             
@@ -484,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     case 'junk':
                         points = 20;
                         message = '+20';
-                        speedModifier += 0.05; // Speed up falling items
+                        speedModifier += 0.05;
                         updateCombo(true);
                         break;
                     case 'bomb':
@@ -544,7 +543,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 comboCounter.textContent = `Combo: ${combo}x`;
                 
-                // Change combo counter color based on value
                 if (combo >= 5) {
                     comboCounter.style.background = 'linear-gradient(to bottom, #FF0000, #8B0000)';
                 } else if (combo >= 3) {
@@ -570,10 +568,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         levelContainer.classList.remove('pulse');
                     }, 500);
                     
-                    // Show level up message
                     showMessage(`LEVEL UP! ${level}`);
                     
-                    // Add time bonus
                     gameTime += 10;
                     timeContainer.textContent = `Time: ${gameTime}s`;
                     timeContainer.classList.add('pulse');
@@ -596,26 +592,21 @@ document.addEventListener('DOMContentLoaded', function() {
             function updateGame() {
                 if (!gameActive) return;
                 
-                // Update emoji positions
                 for (let i = emojis.length - 1; i >= 0; i--) {
                     const emoji = emojis[i];
                     emoji.y += emoji.speed;
                     emoji.element.style.top = emoji.y + 'px';
                     
-                    // Check if emoji is out of bounds
                     if (emoji.y > gameHeight) {
-                        // Remove from array and DOM
                         emojis.splice(i, 1);
                         emoji.element.remove();
                         
-                        // Penalty for missing
                         if (emoji.type === 'healthy' || emoji.type === 'junk') {
                             score -= 10;
-                            score = Math.max(score, 0); // Don't go below 0
+                            score = Math.max(score, 0);
                             scoreContainer.textContent = `Score: ${score}`;
                             resetCombo();
                             
-                            // Show penalty effect
                             const effect = document.createElement('div');
                             effect.className = 'effect';
                             effect.textContent = "-10";
@@ -631,7 +622,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                // Update player position based on mouse/touch
                 let targetX = Math.min(Math.max(mousePos.x - playerWidth / 2, 0), gameWidth - playerWidth);
                 player.style.left = targetX + 'px';
                 
@@ -659,7 +649,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 initGame();
             });
             
-            // Mouse movement for player control
             gameContainer.addEventListener('mousemove', function(e) {
                 if (!gameActive) return;
                 
@@ -667,22 +656,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 mousePos.x = e.clientX - rect.left;
             });
             
-            // Touch movement for mobile
             gameContainer.addEventListener('touchmove', function(e) {
                 if (!gameActive) return;
                 
                 e.preventDefault();
                 const rect = gameContainer.getBoundingClientRect();
                 touchPos.x = e.touches[0].clientX - rect.left;
-                mousePos.x = touchPos.x; // Use touch position for mouse position
+                mousePos.x = touchPos.x;
             });
             
-            // Prevent default touch behavior to avoid scrolling
             gameContainer.addEventListener('touchstart', function(e) {
                 e.preventDefault();
             });
             
-            // Window resize handler
             window.addEventListener('resize', function() {
                 gameWidth = gameContainer.offsetWidth;
                 gameHeight = gameContainer.offsetHeight;
