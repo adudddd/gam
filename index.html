@@ -50,7 +50,7 @@
       user-select: none;
       cursor: pointer;
       transition: transform 0.1s;
-      z-index: 100; /* Added to ensure emojis are on top and clickable */
+      z-index: 100; /* Ensures emojis are on top and clickable */
     }
     
     .emoji:hover {
@@ -435,8 +435,8 @@
         emojiElement.dataset.type = bombs.includes(emoji) ? 'bomb' : 
                                     healthyFoods.includes(emoji) ? 'healthy' : 'junk';
         
-        // Add click handler
-        emojiElement.addEventListener('click', handleEmojiClick);
+        // Add pointerdown handler (instead of click)
+        emojiElement.addEventListener('pointerdown', handleEmojiClick);
         
         // Add to game container and emojis array
         gameContainer.appendChild(emojiElement);
@@ -454,7 +454,7 @@
         spawnTimeout = setTimeout(spawnEmoji, nextInterval);
       }
       
-      // Handle emoji click
+      // Handle emoji click/pointerdown
       function handleEmojiClick(e) {
         e.stopPropagation();
         
